@@ -214,8 +214,10 @@ class HexGrid {
     // Handle mouse clicks on the canvas - updated for panning
     handleClick(event) {
         const rect = this.canvas.getBoundingClientRect();
-        const screenX = event.clientX - rect.left;
-        const screenY = event.clientY - rect.top;
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const screenX = (event.clientX - rect.left) * scaleX;
+        const screenY = (event.clientY - rect.top) * scaleY;
         
         // Use panning system to convert screen coordinates to grid coordinates
         const axial = this.panningSystem.screenToGrid(screenX, screenY);
