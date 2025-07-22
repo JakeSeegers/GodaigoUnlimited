@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Godaigo - The Elemental Stone Game</title>
+  <!-- Link to external CSS -->
+  <link rel="stylesheet" href="style.css" />
+  <!-- Add Open Graph meta tags for better sharing -->
+  <meta property="og:title" content="Godaigo - The Elemental Stone Game" />
+  <meta property="og:description" content="A strategic hexagonal grid game with elemental stones and magical interactions." />
+  <meta property="og:type" content="website" />
+  <!-- Basic SEO meta tags -->
+  <meta name="description" content="Godaigo is a strategic hexagonal grid game where you place elemental stones to overcome challenges and defeat monsters." />
+  <meta name="keywords" content="hex grid, elemental stones, strategy game, javascript game, godaigo" />
+</head>
+<body>
+  <h1>Godaigo Stone Interaction Demo</h1>
+  
+  <div class="game-container">
+    <!-- Increased canvas dimensions to accommodate the larger grid -->
+    <canvas id="hexCanvas" width="800" height="600"></canvas>
+    
+    <div class="controls">
+      <div class="player-info">
+        <div class="action-points">AP: <span id="ap-count">5</span>/5</div>
+        <div class="action-buttons">
+          <button id="break-mode">Break Stone</button>
+          <button id="end-turn">End Turn</button>
+          <button id="activate-scroll">Activate Scroll</button>
+        </div>
+      </div>
+      
+      <div class="mode-selector">
+        <div class="mode-button move-mode active" id="move-mode">Movement Mode</div>
+        <div class="mode-button place-mode" id="place-mode">Stone Placement</div>
+      </div>
+      
+      <div class="stone-selector" id="stone-selector" style="display: none;">
+        <div>
+          <div class="stone-button stone-earth" id="place-earth">▲</div>
+          <div class="stone-count" id="earth-count">5/5</div>
+        </div>
+        <div>
+          <div class="stone-button stone-water" id="place-water">◯</div>
+          <div class="stone-count" id="water-count">5/5</div>
+        </div>
+        <div>
+          <div class="stone-button stone-fire" id="place-fire">♦</div>
+          <div class="stone-count" id="fire-count">5/5</div>
+        </div>
+        <div>
+          <div class="stone-button stone-wind" id="place-wind">≋</div>
+          <div class="stone-count" id="wind-count">5/5</div>
+        </div>
+        <div>
+          <div class="stone-button stone-void" id="place-void">✺</div>
+          <div class="stone-count" id="void-count">5/5</div>
+        </div>
+      </div>
+      
+      <div id="status" style="margin-top: 10px;">
+        Click a hex to move, or select a stone and click an adjacent hex to place it.
+      </div>
+      
+      <div id="ap-display">
+        <span>AP: </span><span id="ap-count">5</span>
+        <span id="void-ap"></span>
+      </div>
+    </div>
+    
+    <div class="legend">
+      <h3>Stone Interactions</h3>
+      <div class="legend-grid">
+        <div class="legend-item">
+          <div class="legend-color stone-earth"></div>
+          <div>Earth: Creates impassable barriers</div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color stone-water"></div>
+          <div>Water: Mimics adjacent stones</div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color stone-fire"></div>
+          <div>Fire: Destroys adjacent stones</div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color stone-wind"></div>
+          <div>Wind: Free movement around it</div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color stone-void"></div>
+          <div>Void: Nullifies stone abilities</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include external JavaScript files in proper dependency order -->
+  <!-- 1. Core Utility Modules -->
+  <script src="stones.js"></script>
+  <script src="HexMath.js"></script>
+  <script src="debugTools.js"></script>
+  <script src="animations.js"></script>
+  
+  <!-- 2. System Components -->
+  <script src="PanningSystem.js"></script>
+  <script src="SpriteSystem.js"></script>
+  <script src="RenderSystem.js"></script>
+  <script src="WaterMimicry.js"></script>
+  <script src="MovementSystem.js"></script>
+  <script src="SpellSystem.js"></script>
+  <script src="stoneInteractions.js"></script>
+  <script src="MonsterSystem.js"></script>
+  <script src="TestSystem.js"></script>
+  
+  <!-- 3. Game Features -->
+  <script src="MegaTileSystem.js"></script>
+  <script src="MegaTileIntegration.js"></script>
+  <script src="ChallengeMode.js"></script>
+  
+  <!-- 4. Core Game Systems -->
+  <script src="HexGrid.js"></script>
+  <script src="GameSettings.js"></script>
+  
+  <!-- 5. UI and Menu Systems -->
+  <script src="startMenu.js"></script>
+  
+  <!-- 6. Main Game Entry Point (must be last) -->
+  <script src="main.js"></script>
+  
+  <!-- Google Analytics or other tracking code could be added here -->
+</body>
+</html>

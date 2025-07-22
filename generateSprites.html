@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Sprites</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .sprite-container {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .sprite-preview {
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sprite Generator</h1>
+    <button id="generateBtn">Generate All Sprites</button>
+    <div id="spritePreviews"></div>
+
+    <script src="generateSprites.js"></script>
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', () => {
+            const sprites = generateAllSprites();
+            const previews = document.getElementById('spritePreviews');
+            previews.innerHTML = '';
+
+            // Create previews and download buttons for each sprite
+            for (const [name, dataUrl] of Object.entries(sprites)) {
+                const container = document.createElement('div');
+                container.className = 'sprite-container';
+                
+                const title = document.createElement('h3');
+                title.textContent = name;
+                container.appendChild(title);
+
+                const preview = document.createElement('img');
+                preview.src = dataUrl;
+                preview.className = 'sprite-preview';
+                container.appendChild(preview);
+
+                const downloadBtn = document.createElement('button');
+                downloadBtn.textContent = 'Download ' + name;
+                downloadBtn.onclick = () => {
+                    const link = document.createElement('a');
+                    link.href = dataUrl;
+                    link.download = name + '.png';
+                    link.click();
+                };
+                container.appendChild(downloadBtn);
+
+                previews.appendChild(container);
+            }
+        });
+    </script>
+</body>
+</html> 
