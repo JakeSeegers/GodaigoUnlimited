@@ -7,6 +7,8 @@ class PanningSystem {
         this.isPanning = false;
         this.lastX = 0;
         this.lastY = 0;
+        this.zoom = 1.0; // Add zoom property
+        this.lastPinchDist = null; // For pinch-to-zoom
         
         // View offset from center of canvas
         this.offsetX = 0;
@@ -82,27 +84,43 @@ class PanningSystem {
             this.isPanning = true;
             this.lastX = e.touches[0].clientX;
             this.lastY = e.touches[0].clientY;
-            e.preventDefault();
+            // Only prevent default for single finger if you want to block scroll
+            // e.preventDefault();
+        } else if (e.touches.length === 2) {
+            this.isPanning = false;
+            this.lastPinchDist = this.getPinchDistance(e);
+            e.preventDefault(); // Only block default for pinch
         }
     }
     
     handleTouchMove(e) {
-        if (!this.isPanning) return;
-        
-        if (e.touches.length === 1) {
+        if (e.touches.length === 1 && this.isPanning) {
             const deltaX = e.touches[0].clientX - this.lastX;
             const deltaY = e.touches[0].clientY - this.lastY;
-            
             this.pan(deltaX, deltaY);
-            
             this.lastX = e.touches[0].clientX;
             this.lastY = e.touches[0].clientY;
+            // e.preventDefault();
+        } else if (e.touches.length === 2) {
+            // Pinch to zoom
+            const newDist = this.getPinchDistance(e);
+            if (this.lastPinchDist) {
+                const scale = newDist / this.lastPinchDist;
+                this.zoom = Math.max(0.5, Math.min(2.5, this.zoom * scale));
+                this.grid.renderSystem.render();
+            }
+            this.lastPinchDist = newDist;
             e.preventDefault();
         }
     }
     
     handleTouchEnd(e) {
-        this.isPanning = false;
+        if (e.touches.length < 2) {
+            this.lastPinchDist = null;
+        }
+        if (e.touches.length === 0) {
+            this.isPanning = false;
+        }
     }
     
     // Core panning function
@@ -134,18 +152,22 @@ class PanningSystem {
         this.grid.renderSystem.render();
     }
     
-    // Convert screen coordinates to grid coordinates considering the pan offset
+    // Convert screen coordinates to grid coordinates considering the pan offset and zoom
     screenToGrid(screenX, screenY) {
         // Get canvas center
         const centerX = this.canvas.width / 2;
         const centerY = this.canvas.height / 2;
-        
-        // Adjust coordinates for pan offset
-        // This is the correction - the formula was inverted
-        const adjustedX = screenX - centerX - this.offsetX;
-        const adjustedY = screenY - centerY - this.offsetY;
-        
+        const zoom = this.zoom || 1.0;
+        // Adjust coordinates for pan offset and zoom
+        const adjustedX = (screenX - centerX - this.offsetX) / zoom;
+        const adjustedY = (screenY - centerY - this.offsetY) / zoom;
         // Use the grid's hex math to convert
         return this.grid.hexMath.pixelToAxial(adjustedX, adjustedY);
+    }
+
+    getPinchDistance(e) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 }

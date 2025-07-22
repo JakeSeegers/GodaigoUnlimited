@@ -249,10 +249,16 @@ class RenderSystem {
         // Clear previous canvas to prevent artifacts
         this.ctx.clearRect(0, 0, this.grid.canvas.width, this.grid.canvas.height);
         
-        // Redraw all revealed hexes - more reliable than partial updates for this game
+        // Apply zoom and pan
+        const zoom = this.grid.panningSystem.zoom || 1.0;
         const centerX = this.grid.canvas.width / 2;
         const centerY = this.grid.canvas.height / 2;
+        this.ctx.save();
+        this.ctx.translate(centerX, centerY);
+        this.ctx.scale(zoom, zoom);
+        this.ctx.translate(-centerX, -centerY);
         
+        // Redraw all revealed hexes - more reliable than partial updates for this game
         for (const [key, hex] of this.grid.hexes) {
             if (hex.revealed) {
                 const pix = this.grid.hexMath.axialToPixel(hex.q, hex.r);
@@ -271,6 +277,7 @@ class RenderSystem {
         // Draw debug markers if debug mode is active
         this.grid.debugger.drawDebugMarkers(this.ctx, centerX, centerY);
         
+        this.ctx.restore();
         this.dirtyHexes.clear();
     }
     
