@@ -156,14 +156,88 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
+        // Add turn tracking for lose condition
+        let turnCount = 0;
+        let loseTurnLimit = 50;
+        let hasLost = false;
+        
+        // Listen for level changes to reset turn count and update limit
+        if (!grid._originalStartNewLevel) {
+            grid._originalStartNewLevel = grid.spellSystem.startNewLevel.bind(grid.spellSystem);
+            grid.spellSystem.startNewLevel = function(level) {
+                turnCount = 0;
+                loseTurnLimit = 50 - ((level - 1) * 5);
+                hasLost = false;
+                grid.isGameOver = false;
+                grid.hasWon = false;
+                grid._originalStartNewLevel(level);
+            };
+        }
+
         // End turn
         document.getElementById('end-turn').addEventListener('click', function() {
+            if (hasLost || grid.isGameOver || grid.hasWon) return;
+            turnCount++;
             document.getElementById('ap-count').textContent = '5';
             grid.movementSystem.resetVoidAPUsed(); // Reset void AP usage
             grid.movementSystem.calculateMovableHexes();
             // grid.monsterSystem.onTurnEnd(); // Trigger monster movement on turn end - DISABLED
             grid.renderSystem.render();
-            grid.updateStatus('Turn ended. Action Points restored.');
+            grid.updateStatus(`Turn ended. Action Points restored. (Turn ${turnCount}/${loseTurnLimit})`);
+            if (turnCount > loseTurnLimit) {
+                hasLost = true;
+                grid.isGameOver = true;
+                // Show lose notification
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.left = '50%';
+                notification.style.top = '50%';
+                notification.style.transform = 'translate(-50%, -50%)';
+                notification.style.backgroundColor = '#2c3e50';
+                notification.style.padding = '30px';
+                notification.style.borderRadius = '10px';
+                notification.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
+                notification.style.zIndex = '1000';
+                notification.style.color = 'white';
+                notification.style.textAlign = 'center';
+                notification.style.minWidth = '400px';
+                notification.style.maxWidth = '600px';
+                const title = document.createElement('h2');
+                title.textContent = 'You lost the game!';
+                title.style.margin = '10px 0 20px 0';
+                notification.appendChild(title);
+                const message = document.createElement('div');
+                message.innerHTML = `You took too many turns.<br>Max allowed: ${loseTurnLimit} turns.`;
+                message.style.fontSize = '18px';
+                message.style.marginBottom = '20px';
+                message.style.lineHeight = '1.5';
+                notification.appendChild(message);
+                // Add Start Over button
+                const restartButton = document.createElement('button');
+                restartButton.textContent = 'Start Over';
+                restartButton.style.padding = '10px 30px';
+                restartButton.style.fontSize = '16px';
+                restartButton.style.backgroundColor = '#3498db';
+                restartButton.style.border = 'none';
+                restartButton.style.borderRadius = '5px';
+                restartButton.style.color = 'white';
+                restartButton.style.cursor = 'pointer';
+                restartButton.style.transition = 'transform 0.2s, box-shadow 0.2s';
+                restartButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+                restartButton.onmouseover = () => {
+                    restartButton.style.transform = 'translateY(-2px)';
+                    restartButton.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                };
+                restartButton.onmouseout = () => {
+                    restartButton.style.transform = 'translateY(0)';
+                    restartButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+                };
+                restartButton.onclick = () => {
+                    window.location.reload();
+                };
+                notification.appendChild(restartButton);
+                document.body.appendChild(notification);
+            }
         });
         
         // Initialize stone counts

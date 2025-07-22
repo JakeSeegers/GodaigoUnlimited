@@ -49,6 +49,19 @@ class HexGrid {
         
         // Set up event listeners
         this.canvas.addEventListener('click', this.handleClick.bind(this));
+        // Add touch support
+        this.canvas.addEventListener('touchstart', (event) => {
+            if (event.touches.length === 1) {
+                const touch = event.touches[0];
+                // Create a synthetic event with clientX/clientY
+                const syntheticEvent = {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                };
+                this.handleClick(syntheticEvent);
+                event.preventDefault(); // Prevent scrolling/zooming
+            }
+        }, { passive: false });
         this.setupSpellButton();
         
         // The keydown listener is now handled in main.js to avoid multiple listeners
